@@ -1,0 +1,4 @@
+---
+dest: "/opt/tinker/shared_files/project/"
+server_user: tinkerware
+server_group: tinkerware

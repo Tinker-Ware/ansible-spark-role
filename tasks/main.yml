@@ -1,0 +1,20 @@
+---
+- name: Download spark-hadoop
+  get_url:
+    url: https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz
+    dest: /tmp/spark-2.1.1-bin-hadoop2.7.tgz
+    mode: 0440
+
+- unarchive:
+    src: /tmp/spark-2.1.1-bin-hadoop2.7.tgz
+    dest: /home/tinkerware/
+
+- name: start spark master
+  command: ./sbin/start-master.sh
+  args:
+    chdir: /home/tinkerware/spark-2.1.1-bin-hadoop2.7
+
+- name: start spark slave
+  command: ./sbin/start-slave.sh spark://yiistable:7077
+  args:
+    chdir: /home/tinkerware/spark-2.1.1-bin-hadoop2.7
