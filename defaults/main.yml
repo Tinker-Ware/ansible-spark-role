@@ -2,3 +2,4 @@
 dest: "/opt/tinker"
 server_user: tinkerware
 server_group: tinkerware
+package_url: "https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz"

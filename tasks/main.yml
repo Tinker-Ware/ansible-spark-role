@@ -17,7 +17,7 @@
 
 - name: Download spark-hadoop
   get_url:
-    url: https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz
+    url: "{{ package_url }}"
     dest: /tmp/spark-2.1.1-bin-hadoop2.7.tgz
     mode: 0440
   sudo: yes
