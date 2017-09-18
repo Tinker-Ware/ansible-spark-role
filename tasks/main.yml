@@ -34,8 +34,10 @@
   sudo: yes
   sudo_user: "{{ server_user }}"
 
-- name: Kill all existing spark services
-  shell: "ps aux | grep spark | grep -v grep | awk '{printf(\"%s \"), $2}' | xargs kill -9"
+- name: Kill all existing services
+  shell: kill $(pgrep -f spark | grep -v $(pgrep -f ansible))
+  register: exit_code
+  failed_when: exit_code.rc == 1
   sudo: yes
   sudo_user: "{{ server_user }}"
   tags:
