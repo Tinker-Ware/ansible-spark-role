@@ -1,20 +1,65 @@
 ---
+- name: Update repositories cache and install java
+  apt:
+    name: default-jdk
+    update_cache: yes
+  sudo: yes
+
+- name: Create destination folder
+  file:
+    path: "{{ dest }}"
+    state: directory
+    owner: "{{ server_user }}"
+    group: "{{ server_group }}"
+    mode: 0755
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+
 - name: Download spark-hadoop
   get_url:
-    url: https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz
+    url: "{{ package_url }}"
     dest: /tmp/spark-2.1.1-bin-hadoop2.7.tgz
     mode: 0440
+  sudo: yes
+  sudo_user: "{{ server_user }}"
 
-- unarchive:
+- name: Decompress spark-hadoop
+  unarchive:
     src: /tmp/spark-2.1.1-bin-hadoop2.7.tgz
-    dest: /home/tinkerware/
+    dest: "{{ dest }}/"
+    copy: no
+    owner: "{{ server_user }}"
+    group: "{{ server_user }}"
+    mode: 0755
+  sudo: yes
+  sudo_user: "{{ server_user }}"
 
-- name: start spark master
+- name: Kill all existing services
+  shell: kill $(pgrep -f spark | grep -v $(pgrep -f ansible))
+  register: exit_code
+  failed_when: exit_code.rc == 1
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+  tags:
+    - update_services
+    - update_spark_repo
+
+- name: Start spark master
   command: ./sbin/start-master.sh
   args:
-    chdir: /home/tinkerware/spark-2.1.1-bin-hadoop2.7
+    chdir: "{{ dest }}/spark-2.1.1-bin-hadoop2.7"
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+  tags:
+    - update_services
+    - update_spark_repo
 
-- name: start spark slave
+- name: Start spark slave
   command: ./sbin/start-slave.sh spark://yiistable:7077
   args:
-    chdir: /home/tinkerware/spark-2.1.1-bin-hadoop2.7
+    chdir: "{{ dest }}/spark-2.1.1-bin-hadoop2.7"
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+  tags:
+    - update_services
+    - update_spark_repo
